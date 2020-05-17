@@ -28,6 +28,10 @@ export default Vue.extend({
       state.contracts.uniswapV2Factory.abi,
       state.contracts.uniswapV2Factory.address[0]
     ));
+    state.contracts.uniswapV2Router01.contract = new web3.eth.Contract(
+      state.contracts.uniswapV2Router01.abi,
+      state.contracts.uniswapV2Router01.address[0]
+    );
 
     uniswapV2Factory.methods
       .allPairsLength()
