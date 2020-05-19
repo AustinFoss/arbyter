@@ -1,9 +1,9 @@
 import Web3 from "web3";
 
-import * as uniswapV2Factory from "../rootContracts/uniswap-v2-core/build/contracts/UniswapV2Factory.json";
-import * as uniswapV2Pair from "../rootContracts/uniswap-v2-core/build/contracts/UniswapV2Pair.json";
-import * as uniswapV2Router01 from "../rootContracts/uniswap-v2-periphery/build/contracts/UniswapV2Router01.json";
-import * as ierc20 from "../rootContracts/uniswap-v2-periphery/build/contracts/IERC20.json";
+import * as uniswapV2Factory from "../contractABIs/UniswapV2Factory.json";
+import * as uniswapV2Pair from "../contractABIs/UniswapV2Pair.json";
+import * as uniswapV2Router01 from "../contractABIs/UniswapV2Router01.json";
+import * as ierc20 from "../contractABIs/IERC20.json";
 
 export default {
   web3: {} as Web3,
