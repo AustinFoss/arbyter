@@ -18,16 +18,15 @@ export default {
   setup(addr) {
     const vueState = reactive(state);
     const vueMethods = methods;
-    const routerContract = vueState.contracts.uniswapV2Router01.contract;
-    const pairContract = vueMethods.newContract(
-      vueState.contracts.uniswapV2Pair.abi,
-      addr.addr //The property with address of this Pair components contract
+    const routerContract = vueState.contracts.uniswapV2Router01.contract.get(
+      vueState.contracts.uniswapV2Router01.address
     );
     state.contracts.uniswapV2Pair.contracts.set(
       addr.addr,
       vueMethods.newContract(vueState.contracts.uniswapV2Pair.abi, addr.addr)
     );
     const pair = reactive({
+      contract: Object,
       tkn0: {
         address: String,
         contract: Object,
@@ -42,19 +41,20 @@ export default {
       oneA2B: Number,
       oneB2A: Number
     });
+    pair.contract = state.contracts.uniswapV2Pair.contracts.get(addr.addr);
     // This block fetches the pair's token address
     // Then Fetches the pair's reserves with block time-stamp
-    pairContract.methods
+    pair.contract.methods
       .token0()
       .call()
       .then(tkn => {
         pair.tkn0.address = tkn;
-        pairContract.methods
+        pair.contract.methods
           .token1()
           .call()
           .then(tkn => {
             pair.tkn1.address = tkn;
-            vueMethods.getPairMarket(routerContract, pairContract, pair);
+            vueMethods.getPairMarket(routerContract, pair.contract, pair);
             // Now with the tkn1.address create a new contract instance
             const tkn1 = (pair.tkn1.contract = vueMethods.newContract(
               vueState.contracts.ierc20.abi,
@@ -65,6 +65,7 @@ export default {
               .call()
               .then(symbol => {
                 pair.tkn1.symbol = symbol;
+                vueState.pairMarkets.set(pair.contract, pair);
               })
               .catch(console.log);
           })

@@ -78,8 +78,9 @@ export default {
     const pair = 0;
     const getPair = function(pair: number) {
       if (pair < state.possiblePairs.length) {
-        state.contracts.uniswapV2Factory.contract.methods
-          .getPair(
+        state.contracts.uniswapV2Factory.contract
+          .get(state.contracts.uniswapV2Factory.address)
+          .methods.getPair(
             state.possiblePairs[pair].tkn0,
             state.possiblePairs[pair].tkn1
           )
@@ -105,7 +106,6 @@ export default {
     this.getUniswapV2Pairs();
   },
   // Fetch all UniswapV2 PM's
-  //  dasdfasdf
   getPairMarket: function(routerContract, pairContract, pair) {
     pairContract.methods
       .getReserves()

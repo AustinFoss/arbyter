@@ -1,10 +1,10 @@
 <template>
   <div id="app">
     <h1>Arbyter</h1>
-    <h3>Unix Epoch: {{ vueState.time }}</h3>
+    <h3>Unix Epoch: {{ Math.round(vueState.time / 1000) }}</h3>
     <h3>
       Time Since Block(#{{ vueState.block.height }}):
-      {{ (vueState.time - vueState.block.epoch * 1000) / 1000 }}sec
+      {{ Math.round((vueState.time - vueState.block.epoch * 1000) / 1000) }}sec
     </h3>
 
     <section>
@@ -38,13 +38,19 @@ export default Vue.extend({
     // Establish a new Ethereum connection a web3 instance in the sharedState
     vueMethods.initWeb3(); // TODO `.ethereum` throws TypErr
     // Instantiate the uniswapV2 webs.eth.Contracts
-    vueState.contracts.uniswapV2Factory.contract = vueMethods.newContract(
-      vueState.contracts.uniswapV2Factory.abi,
-      vueState.contracts.uniswapV2Factory.address[0]
+    vueState.contracts.uniswapV2Factory.contract.set(
+      vueState.contracts.uniswapV2Factory.address,
+      vueMethods.newContract(
+        vueState.contracts.uniswapV2Factory.abi,
+        vueState.contracts.uniswapV2Factory.address[0]
+      )
     );
-    vueState.contracts.uniswapV2Router01.contract = vueMethods.newContract(
-      vueState.contracts.uniswapV2Router01.abi,
-      vueState.contracts.uniswapV2Router01.address[0]
+    vueState.contracts.uniswapV2Router01.contract.set(
+      vueState.contracts.uniswapV2Router01.address,
+      vueMethods.newContract(
+        vueState.contracts.uniswapV2Router01.abi,
+        vueState.contracts.uniswapV2Router01.address[0]
+      )
     );
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
