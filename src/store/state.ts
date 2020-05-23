@@ -6,7 +6,24 @@ import * as uniswapV2Router01 from "../contractABIs/UniswapV2Router01.json";
 import * as ierc20 from "../contractABIs/IERC20.json";
 
 export default {
+  providers: {
+    metaMask: window.ethereum
+  },
   web3: {} as Web3,
+  time: 0,
+  block: {
+    height: 0,
+    epoch: Number
+  },
+  supportedTkns: [
+    // WETH
+    "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    // DAI
+    "0x6b175474e89094c44da98b954eedeac495271d0f",
+    // USDC,
+    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+  ],
+  possiblePairs: [],
   contracts: {
     uniswapV2Factory: {
       name: uniswapV2Factory.contractName,
@@ -23,7 +40,8 @@ export default {
     uniswapV2Pair: {
       name: uniswapV2Pair.contractName,
       abi: uniswapV2Pair.abi as AbiItem, // TODO assign propper type expectation
-      address: [] as string[]
+      address: [] as string[],
+      contracts: new Map()
     },
     ierc20: {
       name: ierc20.contractName,

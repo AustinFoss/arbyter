@@ -1,4 +1,5 @@
 {
+  "abiBuildOrigin": "https://github.com/Uniswap/uniswap-v2-core.git",
   "contractName": "UniswapV2Factory",
   "abi": [
     {
@@ -203,21 +204,14 @@
   "ast": {
     "absolutePath": "/home/admin/arbyter/src/rootContracts/uniswap-v2-core/contracts/UniswapV2Factory.sol",
     "exportedSymbols": {
-      "UniswapV2Factory": [
-        579
-      ]
+      "UniswapV2Factory": [579]
     },
     "id": 580,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 386,
-        "literals": [
-          "solidity",
-          "=",
-          "0.5",
-          ".16"
-        ],
+        "literals": ["solidity", "=", "0.5", ".16"],
         "nodeType": "PragmaDirective",
         "src": "0:24:1"
       },
@@ -264,18 +258,12 @@
             "src": "131:17:1"
           }
         ],
-        "contractDependencies": [
-          1620,
-          1899
-        ],
+        "contractDependencies": [1620, 1899],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
         "id": 579,
-        "linearizedBaseContracts": [
-          579,
-          1899
-        ],
+        "linearizedBaseContracts": [579, 1899],
         "name": "UniswapV2Factory",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -851,10 +839,7 @@
                       "id": 441,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        2370,
-                        2371
-                      ],
+                      "overloadedDeclarations": [2370, 2371],
                       "referencedDeclaration": 2371,
                       "src": "690:7:1",
                       "typeDescriptions": {
@@ -881,10 +866,7 @@
                   "src": "690:59:1"
                 },
                 {
-                  "assignments": [
-                    449,
-                    451
-                  ],
+                  "assignments": [449, 451],
                   "declarations": [
                     {
                       "constant": false,
@@ -1215,10 +1197,7 @@
                       "id": 463,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        2370,
-                        2371
-                      ],
+                      "overloadedDeclarations": [2370, 2371],
                       "referencedDeclaration": 2371,
                       "src": "857:7:1",
                       "typeDescriptions": {
@@ -1423,10 +1402,7 @@
                       "id": 472,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        2370,
-                        2371
-                      ],
+                      "overloadedDeclarations": [2370, 2371],
                       "referencedDeclaration": 2371,
                       "src": "923:7:1",
                       "typeDescriptions": {
@@ -1453,9 +1429,7 @@
                   "src": "923:72:1"
                 },
                 {
-                  "assignments": [
-                    486
-                  ],
+                  "assignments": [486],
                   "declarations": [
                     {
                       "constant": false,
@@ -1554,9 +1528,7 @@
                   "src": "1035:56:1"
                 },
                 {
-                  "assignments": [
-                    493
-                  ],
+                  "assignments": [493],
                   "declarations": [
                     {
                       "constant": false,
@@ -2239,9 +2211,7 @@
                       "id": 533,
                       "name": "PairCreated",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        413
-                      ],
+                      "overloadedDeclarations": [413],
                       "referencedDeclaration": 413,
                       "src": "1487:11:1",
                       "typeDescriptions": {
@@ -2481,10 +2451,7 @@
                       "id": 547,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        2370,
-                        2371
-                      ],
+                      "overloadedDeclarations": [2370, 2371],
                       "referencedDeclaration": 2371,
                       "src": "1603:7:1",
                       "typeDescriptions": {
@@ -2715,10 +2682,7 @@
                       "id": 565,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        2370,
-                        2371
-                      ],
+                      "overloadedDeclarations": [2370, 2371],
                       "referencedDeclaration": 2371,
                       "src": "1763:7:1",
                       "typeDescriptions": {
@@ -2855,21 +2819,14 @@
   "legacyAST": {
     "absolutePath": "/home/admin/arbyter/src/rootContracts/uniswap-v2-core/contracts/UniswapV2Factory.sol",
     "exportedSymbols": {
-      "UniswapV2Factory": [
-        579
-      ]
+      "UniswapV2Factory": [579]
     },
     "id": 580,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 386,
-        "literals": [
-          "solidity",
-          "=",
-          "0.5",
-          ".16"
-        ],
+        "literals": ["solidity", "=", "0.5", ".16"],
         "nodeType": "PragmaDirective",
         "src": "0:24:1"
       },
@@ -2916,18 +2873,12 @@
             "src": "131:17:1"
           }
         ],
-        "contractDependencies": [
-          1620,
-          1899
-        ],
+        "contractDependencies": [1620, 1899],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
         "id": 579,
-        "linearizedBaseContracts": [
-          579,
-          1899
-        ],
+        "linearizedBaseContracts": [579, 1899],
         "name": "UniswapV2Factory",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -3503,10 +3454,7 @@
                       "id": 441,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        2370,
-                        2371
-                      ],
+                      "overloadedDeclarations": [2370, 2371],
                       "referencedDeclaration": 2371,
                       "src": "690:7:1",
                       "typeDescriptions": {
@@ -3533,10 +3481,7 @@
                   "src": "690:59:1"
                 },
                 {
-                  "assignments": [
-                    449,
-                    451
-                  ],
+                  "assignments": [449, 451],
                   "declarations": [
                     {
                       "constant": false,
@@ -3867,10 +3812,7 @@
                       "id": 463,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        2370,
-                        2371
-                      ],
+                      "overloadedDeclarations": [2370, 2371],
                       "referencedDeclaration": 2371,
                       "src": "857:7:1",
                       "typeDescriptions": {
@@ -4075,10 +4017,7 @@
                       "id": 472,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        2370,
-                        2371
-                      ],
+                      "overloadedDeclarations": [2370, 2371],
                       "referencedDeclaration": 2371,
                       "src": "923:7:1",
                       "typeDescriptions": {
@@ -4105,9 +4044,7 @@
                   "src": "923:72:1"
                 },
                 {
-                  "assignments": [
-                    486
-                  ],
+                  "assignments": [486],
                   "declarations": [
                     {
                       "constant": false,
@@ -4206,9 +4143,7 @@
                   "src": "1035:56:1"
                 },
                 {
-                  "assignments": [
-                    493
-                  ],
+                  "assignments": [493],
                   "declarations": [
                     {
                       "constant": false,
@@ -4891,9 +4826,7 @@
                       "id": 533,
                       "name": "PairCreated",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        413
-                      ],
+                      "overloadedDeclarations": [413],
                       "referencedDeclaration": 413,
                       "src": "1487:11:1",
                       "typeDescriptions": {
@@ -5133,10 +5066,7 @@
                       "id": 547,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        2370,
-                        2371
-                      ],
+                      "overloadedDeclarations": [2370, 2371],
                       "referencedDeclaration": 2371,
                       "src": "1603:7:1",
                       "typeDescriptions": {
@@ -5367,10 +5297,7 @@
                       "id": 565,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        2370,
-                        2371
-                      ],
+                      "overloadedDeclarations": [2370, 2371],
                       "referencedDeclaration": 2371,
                       "src": "1763:7:1",
                       "typeDescriptions": {

@@ -1,64 +1,61 @@
 <template>
   <div id="app">
-    <h1>{{ state.contracts.uniswapV2Factory.name }}</h1>
-    <h2>Pairs</h2>
-    <ul v-for="pair in pairs" :key="pair">
-      <PairInfo v-bind:key="pair" v-bind:addr="pair" />
-    </ul>
+    <h1>Arbyter</h1>
+    <h3>Unix Epoch: {{ vueState.time }}</h3>
+    <h3>
+      Time Since Block(#{{ vueState.block.height }}):
+      {{ (vueState.time - vueState.block.epoch * 1000) / 1000 }}sec
+    </h3>
+
+    <section>
+      <h2>UniswapV2</h2>
+      <ul v-for="pair in vueState.contracts.uniswapV2Pair.address" :key="pair">
+        <PairInfo v-bind:key="pair" v-bind:addr="pair" />
+      </ul>
+    </section>
+    <section>
+      <h2>dydx</h2>
+    </section>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import { onMounted } from "@vue/composition-api";
 import { reactive } from "@vue/composition-api";
 import PairInfo from "./components/PairInfo.vue";
-import _state from "./store/state";
-import Web3 from "web3";
+import state from "./store/state";
+import methods from "./store/methods";
 
 export default Vue.extend({
   name: "App",
   components: { PairInfo },
   setup() {
-    // Establish the sharedState as a reactive(state)
-    const state = reactive(_state);
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Establish the sharedState as a reactive(state) for the Vue DApp
+    const vueState = reactive(state);
+    const vueMethods = methods;
     // Establish a new Ethereum connection a web3 instance in the sharedState
-    const web3 = (state.web3 = new Web3(window.ethereum)); // TODO `.ethereum` throws TypErr
-    // Now instantiate the contract property uniswapV2Factory
-    const uniswapV2Factory = (state.contracts.uniswapV2Factory.contract = new web3.eth.Contract(
-      state.contracts.uniswapV2Factory.abi,
-      state.contracts.uniswapV2Factory.address[0]
-    ));
-    state.contracts.uniswapV2Router01.contract = new web3.eth.Contract(
-      state.contracts.uniswapV2Router01.abi,
-      state.contracts.uniswapV2Router01.address[0]
+    vueMethods.initWeb3(); // TODO `.ethereum` throws TypErr
+    // Instantiate the uniswapV2 webs.eth.Contracts
+    vueState.contracts.uniswapV2Factory.contract = vueMethods.newContract(
+      vueState.contracts.uniswapV2Factory.abi,
+      vueState.contracts.uniswapV2Factory.address[0]
     );
+    vueState.contracts.uniswapV2Router01.contract = vueMethods.newContract(
+      vueState.contracts.uniswapV2Router01.abi,
+      vueState.contracts.uniswapV2Router01.address[0]
+    );
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    uniswapV2Factory.methods
-      .allPairsLength()
-      .call()
-      .then((nPairs: number) => {
-        // nPairs TypErr
-        let i = 0;
-        while (i < nPairs) {
-          uniswapV2Factory.methods
-            .allPairs(i)
-            .call()
-            .then((pair: string) => {
-              state.contracts.uniswapV2Pair.address.push(pair);
-            })
-            .catch(console.log);
-          i++;
-        }
+    vueMethods.matchMakePossiblePairs();
+    vueMethods.loadDexMarkets();
+    onMounted(() => {
+      // Start a recursive process that is constantly checking for a new Block
+      vueMethods.getBlock();
+    });
 
-        // TODO After all the pair addrs are stored in sharedState
-        // First get tokens associated with each pair
-        // Then map tuple(tokenA, tokenB) mapped to the pair addr
-      })
-      .catch(console.log);
-
-    const pairs = state.contracts.uniswapV2Pair.address;
-
-    return { state, uniswapV2Factory, pairs };
+    return { vueState };
   }
 });
 </script>
