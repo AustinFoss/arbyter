@@ -1,7 +1,7 @@
 <template lang="html">
-  <div v-if="pair.oneA2B || pair.oneB2A >= 0">
-    <h4>{{ pair.tkn0.symbol }}:{{ pair.tkn1.symbol }}</h4>
-    <h4>{{ pair.oneA2B }}, {{ pair.oneB2A }}</h4>
+  <div v-if="pairMarket.oneA2B || pairMarket.oneB2A >= 0">
+    <h4>{{ pairMarket.tkn0.symbol }}:{{ pairMarket.tkn1.symbol }}</h4>
+    <h4>{{ pairMarket.oneA2B }}, {{ pairMarket.oneB2A }}</h4>
   </div>
   <div v-else>
     <h4>Loading</h4>
@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { reactive } from "@vue/composition-api";
+import { reactive, ref } from "@vue/composition-api";
 import state from "../store/state";
 import methods from "../store/methods";
 
@@ -25,8 +25,10 @@ export default {
       addr.addr,
       vueMethods.newContract(vueState.contracts.uniswapV2Pair.abi, addr.addr)
     );
-    const pair = reactive({
-      contract: Object,
+    const pairContract = vueState.contracts.uniswapV2Pair.contracts.get(
+      addr.addr
+    );
+    vueState.pairMarkets.set(addr.addr, {
       tkn0: {
         address: String,
         contract: Object,
@@ -41,51 +43,18 @@ export default {
       oneA2B: Number,
       oneB2A: Number
     });
-    pair.contract = state.contracts.uniswapV2Pair.contracts.get(addr.addr);
+    const pairMarket = ref(vueState.pairMarkets.get(addr.addr)).value;
+
     // This block fetches the pair's token address
     // Then Fetches the pair's reserves with block time-stamp
-    pair.contract.methods
-      .token0()
-      .call()
-      .then(tkn => {
-        pair.tkn0.address = tkn;
-        pair.contract.methods
-          .token1()
-          .call()
-          .then(tkn => {
-            pair.tkn1.address = tkn;
-            vueMethods.getPairMarket(routerContract, pair.contract, pair);
-            // Now with the tkn1.address create a new contract instance
-            const tkn1 = (pair.tkn1.contract = vueMethods.newContract(
-              vueState.contracts.ierc20.abi,
-              pair.tkn1.address
-            ));
-            tkn1.methods
-              .symbol()
-              .call()
-              .then(symbol => {
-                pair.tkn1.symbol = symbol;
-                vueState.pairMarkets.set(pair.contract, pair);
-              })
-              .catch(console.log);
-          })
-          .catch(console.log);
-        // Now with the tkn0.address create a new contract instance
-        const tkn0 = (pair.tkn0.contract = vueMethods.newContract(
-          vueState.contracts.ierc20.abi,
-          pair.tkn0.address
-        ));
-        tkn0.methods
-          .symbol()
-          .call()
-          .then(symbol => {
-            pair.tkn0.symbol = symbol;
-          })
-          .catch(console.log);
-      })
-      .catch(console.log);
+    vueMethods.getPairMarket(
+      routerContract,
+      pairContract,
+      pairMarket,
+      addr.addr
+    );
 
-    return { vueState, pair };
+    return { vueState, pairMarket };
   },
   props: {
     addr: String

@@ -17,7 +17,7 @@ export default {
   // Current block height and timestamp
   block: {
     height: 0,
-    epoch: Number
+    epoch: 0
   },
   // List of supported ERC20 tokens
   // TODO: Future feature to allow a user to select from a list
@@ -29,8 +29,26 @@ export default {
     // USDC,
     "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
   ],
+  symbols: new Map(),
+  supportedDEXs: ["UniSwapV2", "dYdX", "Oasis"],
   // All possible pairs, no duplicates, from supportedTkns
-  possiblePairs: [],
+  possiblePairs: [] as { tknA: string; tknB: string }[],
+  uniSwapPMs: new Map(),
+  uniSwapPMdata: {
+    tknA: {
+      address: String,
+      contract: Object,
+      symbol: String
+    },
+    tknB: {
+      address: String,
+      contract: Object,
+      symbol: String
+    },
+    reserves: {},
+    oneA2B: Number,
+    oneB2A: Number
+  },
   // All necessary Web3 Contracts the app interacts with
   contracts: {
     uniswapV2Factory: {
@@ -48,13 +66,14 @@ export default {
     uniswapV2Pair: {
       name: uniswapV2Pair.contractName,
       abi: uniswapV2Pair.abi as AbiItem, // TODO assign propper type expectation
-      address: [] as string[],
+      address: new Map(),
       contracts: new Map()
     },
     ierc20: {
       name: ierc20.contractName,
       abi: ierc20.abi as AbiItem, // TODO assign propper type expectation
-      address: [] as string[]
+      address: [] as string[],
+      contracts: new Map()
     }
   },
   // All relevent Pair-Market data mapped to the PMs contract address

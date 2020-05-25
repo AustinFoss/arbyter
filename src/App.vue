@@ -7,15 +7,66 @@
       {{ Math.round((vueState.time - vueState.block.epoch * 1000) / 1000) }}sec
     </h3>
 
-    <section>
-      <h2>UniswapV2</h2>
-      <ul v-for="pair in vueState.contracts.uniswapV2Pair.address" :key="pair">
-        <PairInfo v-bind:key="pair" v-bind:addr="pair" />
-      </ul>
-    </section>
-    <section>
-      <h2>dydx</h2>
-    </section>
+    <table>
+      <thead>
+        <tr>
+          <th>Pair Markets Accross DEX's</th>
+        </tr>
+        <tr>
+          <td></td>
+          <div
+            class="subTable"
+            v-for="dex in vueState.supportedDEXs"
+            :key="vueState.supportedDEXs[dex]"
+          >
+            <td>{{ dex }}</td>
+          </div>
+        </tr>
+      </thead>
+
+      <tbody
+        v-for="pair in vueState.possiblePairs"
+        :key="vueState.possiblePairs[pair]"
+      >
+        <tr v-bind:key="vueState.possiblePairs[pair]">
+          <td>
+            {{ vueState.symbols.get(pair.tknA) }}/{{
+              vueState.symbols.get(pair.tknB)
+            }}
+          </td>
+          <div
+            class="subTable"
+            v-for="dex in vueState.supportedDEXs"
+            :key="dex"
+          >
+            <td :key="dex" v-if="dex == 'UniSwapV2'">
+              <p
+                v-if="
+                  vueState.pairMarkets.get(
+                    vueState.contracts.uniswapV2Pair.address.get(
+                      pair.tknA + pair.tknB
+                    )
+                  ) == undefined
+                "
+              >
+                Loading
+              </p>
+              <UniSwapPM
+                v-else
+                :tknA="pair.tknA"
+                :tknB="pair.tknB"
+                :pmAddress="
+                  vueState.contracts.uniswapV2Pair.address.get(
+                    pair.tknA + pair.tknB
+                  )
+                "
+              />
+            </td>
+            <td v-else>{{ dex }}</td>
+          </div>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -23,13 +74,13 @@
 import Vue from "vue";
 import { onMounted } from "@vue/composition-api";
 import { reactive } from "@vue/composition-api";
-import PairInfo from "./components/PairInfo.vue";
+import UniSwapPM from "./components/UniSwapPM.vue";
 import state from "./store/state";
 import methods from "./store/methods";
 
 export default Vue.extend({
   name: "App",
-  components: { PairInfo },
+  components: { UniSwapPM },
   setup() {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Establish the sharedState as a reactive(state) for the Vue DApp
@@ -54,8 +105,29 @@ export default Vue.extend({
     );
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    vueMethods.matchMakePossiblePairs();
-    vueMethods.loadDexMarkets();
+    // Instantiate all Pair Markets
+    vueMethods.matchMakePossiblePairs(0);
+    for (const pair in vueState.possiblePairs) {
+      const tknA = vueState.possiblePairs[pair].tknA;
+      const tknB = vueState.possiblePairs[pair].tknB;
+      // UniSwapV2
+      vueState.contracts.uniswapV2Factory.contract
+        .get(state.contracts.uniswapV2Factory.address)
+        .methods.getPair(tknA, tknB)
+        .call()
+        .then(addr => {
+          // Save addr to the pool of UniSwap Pair Market Contract addresses
+          vueState.contracts.uniswapV2Pair.address.set(tknA + tknB, addr);
+          // Init the Pair Market Contract
+          vueState.contracts.uniswapV2Pair.contracts.set(
+            addr,
+            vueMethods.newContract(vueState.contracts.uniswapV2Pair.abi, addr)
+          );
+          vueState.pairMarkets.set(addr, vueState.uniSwapPMdata);
+        })
+        .catch(console.log);
+    }
+
     onMounted(() => {
       // Start a recursive process that is constantly checking for a new Block
       vueMethods.getBlock();
@@ -74,5 +146,11 @@ export default Vue.extend({
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+/* table {
+
+} */
+div.subTable {
+  display: inline-table;
 }
 </style>
