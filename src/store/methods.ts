@@ -24,12 +24,12 @@ export default {
           state.block.epoch = Number(block.timestamp);
 
           // Update UniSwapV2 Pair Markets
-          const routerContract = state.contracts.uniswapV2Router01.contract.get(
-            state.contracts.uniswapV2Router01.address
-          );
-          state.contracts.uniswapV2Pair.address.forEach(value => {
-            this.getPairMarket(routerContract, value);
-          });
+          // const routerContract = state.contracts.uniswapV2Router01.contract.get(
+          //   state.contracts.uniswapV2Router01.address
+          // );
+          // state.contracts.uniswapV2Pair.address.forEach(value => {
+          //   this.getPairMarket(routerContract, value);
+          // });
 
           this.getBlock();
         } else {
@@ -68,7 +68,8 @@ export default {
           // Push the made match to possiblePairs[] if not already included
           const madeMatch = {
             tknA: state.supportedTkns[tkn0],
-            tknB: state.supportedTkns[tkn1]
+            tknB: state.supportedTkns[tkn1],
+            a2b: false
           };
           state.possiblePairs.push(madeMatch);
 
@@ -93,116 +94,6 @@ export default {
       .call()
       .then((res: string) => {
         state.symbols.set(addr, res);
-      })
-      .catch(console.log);
-  },
-
-  // Fetch all UniswapV2 PM's
-  getPairMarket: function(routerContract, addr: string) {
-    const dataHolder = {
-      tknA: {
-        address: String as string,
-        contract: Object,
-        symbol: String as string
-      },
-      tknB: {
-        address: String as string,
-        contract: Object,
-        symbol: String as string
-      },
-      reserves: {},
-      oneA2B: Number as number,
-      oneB2A: Number as number
-    };
-    const pairContract = state.contracts.uniswapV2Pair.contracts.get(addr);
-    pairContract.methods
-      .token0()
-      .call()
-      .then((tkn: string) => {
-        dataHolder.tknA.address = tkn;
-        pairContract.methods
-          .token1()
-          .call()
-          .then((tkn: string) => {
-            dataHolder.tknB.address = tkn;
-            pairContract.methods
-              .getReserves()
-              .call()
-              .then(reserves => {
-                // Then calls getAmountOut for 1 of tkn0 to tkn1 from the router contract
-                dataHolder.reserves = reserves;
-                routerContract.methods
-                  .getAmountOut(
-                    1,
-                    dataHolder.reserves[0],
-                    dataHolder.reserves[1]
-                  )
-                  .call()
-                  .then((amountOut: number) => {
-                    // 1tknA -> XtknB
-                    dataHolder.oneA2B = amountOut;
-                    routerContract.methods
-                      .getAmountOut(
-                        1,
-                        dataHolder.reserves[1],
-                        dataHolder.reserves[0]
-                      )
-                      .call()
-                      .then((amountOut: number) => {
-                        // 1tknB -> XtknA
-                        dataHolder.oneB2A = amountOut;
-                        state.pairMarkets.set(addr, null);
-                        state.pairMarkets.set(addr, dataHolder);
-                        // // Now catch if either is zero
-                        // if (dataHolder.oneA2B == 0) {
-                        //   dataHolder.oneA2B = 1 / dataHolder.oneB2A;
-                        // } else if (dataHolder.oneB2A == 0) {
-                        //   dataHolder.oneB2A = 1 / dataHolder.oneA2B;
-                        // }
-                        // // Math correction if USDC tkn is present in pair
-                        // if (dataHolder.tknA.symbol == "USDC") {
-                        //   dataHolder.oneB2A =
-                        //     dataHolder.oneB2A * Math.pow(10, 12);
-                        //   dataHolder.oneA2B =
-                        //     dataHolder.oneA2B / Math.pow(10, 12);
-                        // } else if (dataHolder.tknB.symbol == "USDC") {
-                        //   dataHolder.oneA2B =
-                        //     dataHolder.oneA2B * Math.pow(10, 12);
-                        //   dataHolder.oneB2A =
-                        //     dataHolder.oneB2A / Math.pow(10, 12);
-                        // }
-                      })
-                      .catch(console.log);
-                  })
-                  .catch(console.log);
-              })
-              .catch(console.log);
-            // Now with the tkn1.address create a new contract instance
-            const tknB = (dataHolder.tknB.contract = this.newContract(
-              state.contracts.ierc20.abi,
-              dataHolder.tknB.address
-            ));
-            tknB.methods
-              .symbol()
-              .call()
-              .then((symbol: string) => {
-                dataHolder.tknB.symbol = symbol;
-              })
-              .catch(console.log);
-          })
-          .catch(console.log);
-        // Now with the tkn0.address create a new contract instance
-        const tknA = (dataHolder.tknA.contract = this.newContract(
-          state.contracts.ierc20.abi,
-          dataHolder.tknA.address
-        ));
-        tknA.methods
-          .symbol()
-          .call()
-          .then((symbol: string) => {
-            dataHolder.tknA.symbol = symbol;
-          })
-          .catch(console.log);
       })
       .catch(console.log);
   }

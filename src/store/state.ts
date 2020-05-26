@@ -4,6 +4,7 @@ import * as uniswapV2Factory from "../contractABIs/UniswapV2Factory.json";
 import * as uniswapV2Pair from "../contractABIs/UniswapV2Pair.json";
 import * as uniswapV2Router01 from "../contractABIs/UniswapV2Router01.json";
 import * as ierc20 from "../contractABIs/IERC20.json";
+import * as kyberNetworkProxy from "../contractABIs/KyberNetworkProxy.json";
 
 export default {
   // Gives a list of a set list of supported providers
@@ -25,12 +26,12 @@ export default {
     // WETH
     "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     // DAI
-    "0x6b175474e89094c44da98b954eedeac495271d0f",
-    // USDC,
-    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+    "0x6b175474e89094c44da98b954eedeac495271d0f"
+    // USDC
+    // "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
   ],
   symbols: new Map(),
-  supportedDEXs: ["UniSwapV2", "dYdX", "Oasis"],
+  supportedDEXs: ["UniSwap", "Kyber"],
   // All possible pairs, no duplicates, from supportedTkns
   possiblePairs: [] as { tknA: string; tknB: string }[],
   uniSwapPMs: new Map(),
@@ -74,8 +75,14 @@ export default {
       abi: ierc20.abi as AbiItem, // TODO assign propper type expectation
       address: [] as string[],
       contracts: new Map()
+    },
+    kyberNetworkProxy: {
+      abi: kyberNetworkProxy.abi as AbiItem, // TODO assign propper type expectation
+      address: ["0x818e6fecd516ecc3849daf6845e3ec868087b755"] as string[],
+      contract: new Map()
     }
   },
+
   // All relevent Pair-Market data mapped to the PMs contract address
   pairMarkets: new Map()
 };

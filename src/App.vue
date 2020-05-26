@@ -3,15 +3,13 @@
     <h1>Arbyter</h1>
     <h3>Unix Epoch: {{ Math.round(vueState.time / 1000) }}</h3>
     <h3>
-      Time Since Block(#{{ vueState.block.height }}):
-      {{ Math.round((vueState.time - vueState.block.epoch * 1000) / 1000) }}sec
+      Last Block #{{ vueState.block.height }}:
+      {{ Math.round((vueState.time - vueState.block.epoch * 1000) / 1000) }}
+      seconds ago
     </h3>
 
     <table>
       <thead>
-        <tr>
-          <th>Pair Markets Accross DEX's</th>
-        </tr>
         <tr>
           <td></td>
           <div
@@ -19,7 +17,7 @@
             v-for="dex in vueState.supportedDEXs"
             :key="vueState.supportedDEXs[dex]"
           >
-            <td>{{ dex }}</td>
+            <th>{{ dex }}</th>
           </div>
         </tr>
       </thead>
@@ -30,16 +28,23 @@
       >
         <tr v-bind:key="vueState.possiblePairs[pair]">
           <td>
-            {{ vueState.symbols.get(pair.tknA) }}/{{
-              vueState.symbols.get(pair.tknB)
-            }}
+            <button v-if="pair.a2b == true" @click="pair.a2b = false">
+              {{ vueState.symbols.get(pair.tknA) }}/{{
+                vueState.symbols.get(pair.tknB)
+              }}
+            </button>
+            <button v-else @click="pair.a2b = true">
+              {{ vueState.symbols.get(pair.tknB) }}/{{
+                vueState.symbols.get(pair.tknA)
+              }}
+            </button>
           </td>
           <div
             class="subTable"
             v-for="dex in vueState.supportedDEXs"
             :key="dex"
           >
-            <td :key="dex" v-if="dex == 'UniSwapV2'">
+            <td :key="dex" v-if="dex == 'UniSwap'">
               <p
                 v-if="
                   vueState.pairMarkets.get(
@@ -60,9 +65,17 @@
                     pair.tknA + pair.tknB
                   )
                 "
+                :possiblePairsIndex="vueState.possiblePairs.indexOf(pair)"
               />
             </td>
-            <td v-else>{{ dex }}</td>
+
+            <td :key="dex" v-if="dex == 'Kyber'">
+              <KyberPM
+                :tknA="pair.tknA"
+                :tknB="pair.tknB"
+                :possiblePairsIndex="vueState.possiblePairs.indexOf(pair)"
+              />
+            </td>
           </div>
         </tr>
       </tbody>
@@ -75,12 +88,13 @@ import Vue from "vue";
 import { onMounted } from "@vue/composition-api";
 import { reactive } from "@vue/composition-api";
 import UniSwapPM from "./components/UniSwapPM.vue";
+import KyberPM from "./components/KyberPM.vue";
 import state from "./store/state";
 import methods from "./store/methods";
 
 export default Vue.extend({
   name: "App",
-  components: { UniSwapPM },
+  components: { UniSwapPM, KyberPM },
   setup() {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Establish the sharedState as a reactive(state) for the Vue DApp
@@ -101,6 +115,13 @@ export default Vue.extend({
       vueMethods.newContract(
         vueState.contracts.uniswapV2Router01.abi,
         vueState.contracts.uniswapV2Router01.address[0]
+      )
+    );
+    vueState.contracts.kyberNetworkProxy.contract.set(
+      vueState.contracts.kyberNetworkProxy.address,
+      vueMethods.newContract(
+        vueState.contracts.kyberNetworkProxy.abi,
+        vueState.contracts.kyberNetworkProxy.address[0]
       )
     );
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
