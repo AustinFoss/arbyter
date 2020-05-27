@@ -29,6 +29,7 @@ export default {
     );
 
     watch(
+      // Watching and waiting for a new block to arrive
       () => vueState.block.height,
       () => {
         // Now rebuild the fetching data logic

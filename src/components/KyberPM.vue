@@ -21,6 +21,7 @@ export default {
       oneB2A: Number
     });
     watch(
+      // Watching and waiting for a new block to arrive
       () => vueState.block.height,
       () => {
         vueState.contracts.kyberNetworkProxy.contract
