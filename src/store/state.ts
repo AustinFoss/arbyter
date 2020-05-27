@@ -7,10 +7,11 @@ import * as ierc20 from "../contractABIs/IERC20.json";
 import * as kyberNetworkProxy from "../contractABIs/KyberNetworkProxy.json";
 
 export default {
+  // TODO: Ask to user to assign their own provider
   // Gives a list of a set list of supported providers
-  providers: {
-    metaMask: window.ethereum
-  },
+  // providers: {
+  //   metaMask: window.ethereum
+  // },
   // Common Web3 instance for the App
   web3: {} as Web3,
   // Time in unix epoch
@@ -26,30 +27,26 @@ export default {
     // WETH
     "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     // DAI
-    "0x6b175474e89094c44da98b954eedeac495271d0f"
+    "0x6b175474e89094c44da98b954eedeac495271d0f",
     // USDC
-    // "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+    // "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    // Tether
+    // "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    // OMG
+    // "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07",
+    // BAT
+    "0x0d8775f648430679a709e98d2b0cb6250d2887ef"
   ],
   symbols: new Map(),
-  supportedDEXs: ["UniSwap", "Kyber"],
+  supportedDEXs: [
+    "UniSwap",
+    "Kyber"
+    // "Oasis"
+  ],
+  dexCombos: [] as { dexA: string; dexB: string }[],
   // All possible pairs, no duplicates, from supportedTkns
   possiblePairs: [] as { tknA: string; tknB: string }[],
-  uniSwapPMs: new Map(),
-  uniSwapPMdata: {
-    tknA: {
-      address: String,
-      contract: Object,
-      symbol: String
-    },
-    tknB: {
-      address: String,
-      contract: Object,
-      symbol: String
-    },
-    reserves: {},
-    oneA2B: Number,
-    oneB2A: Number
-  },
+
   // All necessary Web3 Contracts the app interacts with
   contracts: {
     uniswapV2Factory: {
@@ -84,5 +81,5 @@ export default {
   },
 
   // All relevent Pair-Market data mapped to the PMs contract address
-  pairMarkets: new Map()
+  pairMarkets: []
 };

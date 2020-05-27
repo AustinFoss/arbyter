@@ -15,9 +15,9 @@
           <div
             class="subTable"
             v-for="dex in vueState.supportedDEXs"
-            :key="vueState.supportedDEXs[dex]"
+            :key="dex"
           >
-            <th>{{ dex }}</th>
+            <th :key="dex">{{ dex }}</th>
           </div>
         </tr>
       </thead>
@@ -47,7 +47,7 @@
             <td :key="dex" v-if="dex == 'UniSwap'">
               <p
                 v-if="
-                  vueState.pairMarkets.get(
+                  vueState.contracts.uniswapV2Pair.contracts.get(
                     vueState.contracts.uniswapV2Pair.address.get(
                       pair.tknA + pair.tknB
                     )
@@ -60,20 +60,32 @@
                 v-else
                 :tknA="pair.tknA"
                 :tknB="pair.tknB"
-                :pmAddress="
-                  vueState.contracts.uniswapV2Pair.address.get(
-                    pair.tknA + pair.tknB
-                  )
-                "
                 :possiblePairsIndex="vueState.possiblePairs.indexOf(pair)"
+                :dex="dex"
               />
             </td>
 
-            <td :key="dex" v-if="dex == 'Kyber'">
+            <td :key="dex" v-else-if="dex == 'Kyber'">
               <KyberPM
                 :tknA="pair.tknA"
                 :tknB="pair.tknB"
                 :possiblePairsIndex="vueState.possiblePairs.indexOf(pair)"
+                :dex="dex"
+              />
+            </td>
+            <td :key="dex" v-else>WIP</td>
+          </div>
+          <div
+            class="subTable"
+            v-for="combo in vueState.dexCombos"
+            :key="vueState.dexCombos[combo]"
+          >
+            <td :key="vueState.dexCombos[combo]">
+              <PercentGain
+                :tknA="pair.tknA"
+                :tknB="pair.tknB"
+                :dexA="combo.dexA"
+                :dexB="combo.dexB"
               />
             </td>
           </div>
@@ -89,12 +101,13 @@ import { onMounted } from "@vue/composition-api";
 import { reactive } from "@vue/composition-api";
 import UniSwapPM from "./components/UniSwapPM.vue";
 import KyberPM from "./components/KyberPM.vue";
+import PercentGain from "./components/PercentGain.vue";
 import state from "./store/state";
 import methods from "./store/methods";
 
 export default Vue.extend({
   name: "App",
-  components: { UniSwapPM, KyberPM },
+  components: { UniSwapPM, KyberPM, PercentGain },
   setup() {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Establish the sharedState as a reactive(state) for the Vue DApp
@@ -126,8 +139,19 @@ export default Vue.extend({
     );
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    // Init ERC20 contracts of all supportedTkns
+    // & get their symbols
+    for (let tkn in vueState.supportedTkns) {
+      tkn = vueState.supportedTkns[tkn];
+      vueState.contracts.ierc20.contracts.set(
+        tkn,
+        vueMethods.newContract(vueState.contracts.ierc20.abi, tkn)
+      );
+
+      vueMethods.getSymbol(tkn);
+    }
     // Instantiate all Pair Markets
-    vueMethods.matchMakePossiblePairs(0);
+    vueMethods.matchMakePossiblePairs();
     for (const pair in vueState.possiblePairs) {
       const tknA = vueState.possiblePairs[pair].tknA;
       const tknB = vueState.possiblePairs[pair].tknB;
@@ -136,7 +160,7 @@ export default Vue.extend({
         .get(state.contracts.uniswapV2Factory.address)
         .methods.getPair(tknA, tknB)
         .call()
-        .then(addr => {
+        .then((addr: string) => {
           // Save addr to the pool of UniSwap Pair Market Contract addresses
           vueState.contracts.uniswapV2Pair.address.set(tknA + tknB, addr);
           // Init the Pair Market Contract
@@ -144,10 +168,10 @@ export default Vue.extend({
             addr,
             vueMethods.newContract(vueState.contracts.uniswapV2Pair.abi, addr)
           );
-          vueState.pairMarkets.set(addr, vueState.uniSwapPMdata);
         })
         .catch(console.log);
     }
+    vueMethods.matchMakeDexCombos();
 
     onMounted(() => {
       // Start a recursive process that is constantly checking for a new Block
@@ -173,5 +197,9 @@ export default Vue.extend({
 } */
 div.subTable {
   display: inline-table;
+}
+
+td {
+  text-align: right;
 }
 </style>

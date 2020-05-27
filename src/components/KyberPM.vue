@@ -17,13 +17,6 @@ export default {
     const vueState = reactive(state);
     const vueMethods = methods;
     const pairMarket = reactive({
-      tknA: {
-        symbol: String
-      },
-      tknB: {
-        symbol: String
-      },
-      reserves: {},
       oneA2B: Number,
       oneB2A: Number
     });
@@ -42,6 +35,13 @@ export default {
               .call()
               .then(amntOut => {
                 pairMarket.oneB2A = amntOut.expectedRate;
+
+                vueMethods.saveData(
+                  props.tknA,
+                  props.tknB,
+                  props.dex,
+                  pairMarket
+                );
               })
               .catch(console.log);
           })
@@ -53,7 +53,8 @@ export default {
   props: {
     tknA: String,
     tknB: String,
-    possiblePairsIndex: Number
+    possiblePairsIndex: Number,
+    dex: String
   }
 };
 </script>

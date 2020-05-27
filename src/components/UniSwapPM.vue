@@ -1,8 +1,5 @@
 <template lang="html">
   <div>
-    <!-- <h4>
-      {{ Math.round((vueState.time - pairMarket.reserves[2] * 1000) / 600) }}sec
-    </h4> -->
     <p v-if="vueState.possiblePairs[props.possiblePairsIndex].a2b == true">
       {{ pairMarket.oneA2B }}
     </p>
@@ -21,13 +18,6 @@ export default {
     const vueState = reactive(state);
     const vueMethods = methods;
     const pairMarket = reactive({
-      tknA: {
-        symbol: String
-      },
-      tknB: {
-        symbol: String
-      },
-      reserves: {},
       oneA2B: Number,
       oneB2A: Number
     });
@@ -35,24 +25,9 @@ export default {
       state.contracts.uniswapV2Router01.address
     );
     const pairContract = vueState.contracts.uniswapV2Pair.contracts.get(
-      props.pmAddress
+      vueState.contracts.uniswapV2Pair.address.get(props.tknA + props.tknB)
     );
-    const erc20tknA = vueState.contracts.ierc20.contracts.get(props.tknA);
-    erc20tknA.methods
-      .symbol()
-      .call()
-      .then(symbol => {
-        pairMarket.tknA.symbol = symbol;
-      })
-      .catch();
-    const erc20tknB = vueState.contracts.ierc20.contracts.get(props.tknB);
-    erc20tknB.methods
-      .symbol()
-      .call()
-      .then(symbol => {
-        pairMarket.tknB.symbol = symbol;
-      })
-      .catch(console.log);
+
     watch(
       () => vueState.block.height,
       () => {
@@ -61,26 +36,22 @@ export default {
           .getReserves()
           .call()
           .then(reserves => {
-            pairMarket.reserves = reserves;
             routerContract.methods
-              .getAmountOut(
-                1000000,
-                pairMarket.reserves[0],
-                pairMarket.reserves[1]
-              )
+              .getAmountOut(1000000, reserves[0], reserves[1])
               .call()
               .then(amntOut => {
                 pairMarket.oneA2B = amntOut / 1000000;
                 routerContract.methods
-                  .getAmountOut(
-                    1000000,
-                    pairMarket.reserves[1],
-                    pairMarket.reserves[0]
-                  )
+                  .getAmountOut(1000000, reserves[1], reserves[0])
                   .call()
                   .then(amntOut => {
                     pairMarket.oneB2A = amntOut / 1000000;
-                    // Once update is completed vueState.pairMarkets.push({key: props.pmAddress, value: pairMarket})
+                    vueMethods.saveData(
+                      props.tknA,
+                      props.tknB,
+                      props.dex,
+                      pairMarket
+                    );
                   })
                   .catch(console.log);
               })
@@ -94,8 +65,8 @@ export default {
   props: {
     tknA: String,
     tknB: String,
-    pmAddress: String,
-    possiblePairsIndex: Number
+    possiblePairsIndex: Number,
+    dex: String
   }
 };
 </script>

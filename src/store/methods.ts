@@ -20,16 +20,9 @@ export default {
       .then(block => {
         this.keepTime();
         if (block.number > state.block.height) {
+          state.pairMarkets = [];
           state.block.height = block.number;
           state.block.epoch = Number(block.timestamp);
-
-          // Update UniSwapV2 Pair Markets
-          // const routerContract = state.contracts.uniswapV2Router01.contract.get(
-          //   state.contracts.uniswapV2Router01.address
-          // );
-          // state.contracts.uniswapV2Pair.address.forEach(value => {
-          //   this.getPairMarket(routerContract, value);
-          // });
 
           this.getBlock();
         } else {
@@ -47,43 +40,44 @@ export default {
   newContract: function(_abi: AbiItem, _address: string) {
     return new state.web3.eth.Contract(_abi, _address);
   },
-  // Passes all supported token addresses from state.supportedTkns
-  // Assignes the value of all state.possiblePairs[]
-  matchMakePossiblePairs: function(startAt: number) {
-    // matchPossiblePairs is a double recursive function
-    // Iterating over state.supportedTkns[]
-    // Matching all unique pairs
-    const tkn0 = startAt;
-    if (tkn0 < state.supportedTkns.length) {
-      //  First init a new erc20 contract
-      state.contracts.ierc20.contracts.set(
-        state.supportedTkns[tkn0],
-        this.newContract(state.contracts.ierc20.abi, state.supportedTkns[tkn0])
-      );
-      this.getSymbol(state.supportedTkns[tkn0]);
-      const tkn1: number = tkn0 + 1;
-
-      const make = function(tkn0: number, tkn1: number) {
-        if (tkn1 < state.supportedTkns.length) {
-          // Push the made match to possiblePairs[] if not already included
-          const madeMatch = {
-            tknA: state.supportedTkns[tkn0],
-            tknB: state.supportedTkns[tkn1],
-            a2b: false
-          };
-          state.possiblePairs.push(madeMatch);
-
-          // Move to the next possible pair
-          make(tkn0, tkn1 + 1);
-        } else {
-          return;
+  matchMake: function(list): object[] {
+    const matches: object[] = [];
+    const match = function(list) {
+      if (list.length > 0) {
+        for (const i in list.slice(1)) {
+          matches.push({ a: list[0], b: list.slice(1)[i] });
         }
+        match(list.slice(1));
+      }
+    };
+    match(list);
+    return matches;
+  },
+  // Saves all unique combinations of supportedTkns
+  matchMakePossiblePairs: function() {
+    for (let match in this.matchMake(state.supportedTkns)) {
+      match = this.matchMake(state.supportedTkns)[match];
+      const madeMatch = {
+        tknA: match.a,
+        tknB: match.b,
+        a2b: false
       };
-      make(tkn0, tkn1);
-      // Match the next iteration of token pairs
-      this.matchMakePossiblePairs(tkn0 + 1);
-    } else {
-      return;
+      if (!state.possiblePairs.includes(madeMatch)) {
+        state.possiblePairs.push(madeMatch);
+      }
+    }
+  },
+  // Saves all unique combinations of supportedDEXs
+  matchMakeDexCombos: function() {
+    for (let match in this.matchMake(state.supportedDEXs)) {
+      match = this.matchMake(state.supportedDEXs)[match];
+      const madeMatch = {
+        dexA: match.a,
+        dexB: match.b
+      };
+      if (!state.dexCombos.includes(madeMatch)) {
+        state.dexCombos.push(madeMatch);
+      }
     }
   },
   // Pass ERC20 address string and returns symbol string
@@ -96,5 +90,9 @@ export default {
         state.symbols.set(addr, res);
       })
       .catch(console.log);
+  },
+  // Pass pairMarket's tknA, tknB, dex, & data
+  saveData: function(tknA: string, tknB: string, dex: string, data: {}) {
+    state.pairMarkets.push({ key: tknA + tknB + dex, data: data });
   }
 };
