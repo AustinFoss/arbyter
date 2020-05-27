@@ -1,6 +1,9 @@
 <template lang="html">
   <div>
-    <p>Uniswap{{ (pm.a.oneB2A / (pm.b.oneA2B / 10 ** 18)) * 100 }}% of Kyber</p>
+    <h4>
+      Difference of
+      {{ Math.abs((pm.a.oneB2A / (pm.b.oneA2B / 10 ** 18)) * 100 - 100) }}%
+    </h4>
   </div>
 </template>
 
@@ -28,6 +31,8 @@ export default {
             pm.b = item.data;
           }
         });
+        // TODO: Insert logic here for recognizing ARB Opps
+        // Chain other recognized ARB Opps from the other PercentGain components together
       }
     );
 

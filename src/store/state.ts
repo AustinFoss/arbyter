@@ -46,7 +46,6 @@ export default {
   dexCombos: [] as { dexA: string; dexB: string }[],
   // All possible pairs, no duplicates, from supportedTkns
   possiblePairs: [] as { tknA: string; tknB: string }[],
-
   // All necessary Web3 Contracts the app interacts with
   contracts: {
     uniswapV2Factory: {
@@ -79,7 +78,6 @@ export default {
       contract: new Map()
     }
   },
-
   // All relevent Pair-Market data mapped to the PMs contract address
   pairMarkets: []
 };

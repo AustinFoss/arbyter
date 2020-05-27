@@ -201,5 +201,6 @@ div.subTable {
 
 td {
   text-align: right;
+  padding-right: 20px;
 }
 </style>
